@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-17T11:18:28.359Z",
+  "baseUrl": "https://github.com/shengsuan/agent-craft",
+  "counts": {
+    "total": 2,
+    "mcps": 1,
+    "plugins": 0,
+    "skills": 1
+  },
+  "tags": [
+    {
+      "id": "productivity",
+      "label": "Productivity",
+      "count": 29
+    },
+    {
+      "id": "marketing",
+      "label": "Marketing",
+      "count": 7
+    },
+    {
+      "id": "research",
+      "label": "Research & Docs",
+      "count": 30
+    },
+    {
+      "id": "data",
+      "label": "Data & Analytics",
+      "count": 66
+    },
+    {
+      "id": "software",
+      "label": "Software Development",
+      "count": 109
+    },
+    {
+      "id": "business",
+      "label": "Business Operations",
+      "count": 21
+    },
+    {
+      "id": "sales",
+      "label": "Sales",
+      "count": 7
+    },
+    {
+      "id": "finance",
+      "label": "Finance",
+      "count": 7
+    },
+    {
+      "id": "creative",
+      "label": "Creative & Design",
+      "count": 15
+    },
+    {
+      "id": "memory",
+      "label": "Memory & Knowledge",
+      "count": 1
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "count": 15
+    },
+    {
+      "id": "databases",
+      "label": "Databases",
+      "count": 11
+    }
+  ],
+  "entries": [
+    {
+      "id": "deepwiki",
+      "type": "mcp",
+      "name": "DeepWiki MCP Server",
+      "tagline": "将 Cline 连接至 DeepWiki，以进行代码库探索和知识检索。",
+      "description": "DeepWiki MCP 服务器是一项免费无需身份验证的远程服务，可用于访问公共代码仓库。解释和交互式探索代码仓库。",
+      "author": {
+        "name": "devin.ai"
+      },
+      "tags": [
+        "creative"
+      ],
+      "verified": false,
+      "featured": false,
+      "install": {
+        "args": [
+          "deepwiki",
+          "--transport",
+          "http",
+          "https://mcp.deepwiki.com/mcp"
+        ],
+        "command": "cline mcp install deepwiki --transport http https://mcp.deepwiki.com/mcp"
+      },
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "code-review",
+      "type": "skill",
+      "name": "代码审核",
+      "tagline": "面向 AI 编程助手的自动化代码审查",
+      "description": "面向 AI 编程助手，提供针对代码质量、风格及潜在问题的反馈，实现自动化代码审查。",
+      "author": {
+        "name": "coohu",
+        "url": "https://github.com/shengsuan/agent-craft/tree/main/skills/code-review"
+      },
+      "homepage": "https://github.com/shengsuan/agent-craft",
+      "repo": "https://github.com/shengsuan/agent-craft",
+      "tags": [
+        "software",
+        "research"
+      ],
+      "license": "Apache-2.0",
+      "verified": true,
+      "featured": false,
+      "install": {
+        "args": [
+          "shengsuan/agent-craft",
+          "--skill",
+          "code-review"
+        ],
+        "command": "cline skill install shengsuan/agent-craft --skill code-review"
+      }
+    }
+  ]
+}
