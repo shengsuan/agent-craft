@@ -123,6 +123,32 @@
         ],
         "command": "cline skill install shengsuan/agent-craft --skill code-review"
       }
+    },
+    {
+      "id": "tokeneconomizer",
+      "type": "plugin",
+      "name": "智能体Token经济优化器",
+      "tagline": "TokenEconomizer：面向编程智能体的、基于经验的黑盒成本控制方法",
+      "description": "TokenEconomizer 能够在不修改编程智能体（coding agent）本身的前提下，降低其在您常用代码仓库中运行的成本。它通过学习智能体在代码仓库中过往的运行记录，利用这些经验来减少后续会话中的资源浪费。",
+      "author": {
+        "name": "microsoft",
+        "url": "https://github.com/microsoft/TokenEconomizer"
+      },
+      "homepage": "https://github.com/microsoft/TokenEconomizer",
+      "repo": "https://github.com/microsoft/TokenEconomizer",
+      "icon": "https://raw.githubusercontent.com/shengsuan/agent-craft/main/assets/microsoft.png",
+      "tags": [
+        "software"
+      ],
+      "license": "MIT",
+      "verified": true,
+      "featured": true,
+      "install": {
+        "args": [
+          "tokeneconomizer"
+        ],
+        "command": "cline plugin install microsoft/tokeneconomizer"
+      }
     }
   ]
 }
