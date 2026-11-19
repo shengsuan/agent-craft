@@ -103,10 +103,8 @@
       "tagline": "面向 AI 编程助手的自动化代码审查",
       "description": "面向 AI 编程助手，提供针对代码质量、风格及潜在问题的反馈，实现自动化代码审查。",
       "author": {
-        "name": "coohu",
-        "url": "https://github.com/shengsuan/agent-craft/tree/main/skills/code-review"
+        "name": "coohu"
       },
-      "homepage": "https://github.com/shengsuan/agent-craft",
       "repo": "https://github.com/shengsuan/agent-craft",
       "tags": [
         "software",
@@ -148,6 +146,30 @@
           "tokeneconomizer"
         ],
         "command": "cline plugin install microsoft/tokeneconomizer"
+      }
+    },
+    {
+      "id": "project-inspector",
+      "type": "skill",
+      "name": "项目检查器",
+      "tagline": "面向 AI 编程助手的自动化项目检查",
+      "description": "这是一款项目分析工具，能够在不执行项目代码的前提下，生成代码库的结构化概况（涵盖编程语言、框架、包管理器、构建/测试/代码检查工具、Monorepo 中的各个包、入口点、基础设施以及 Git 变更记录等信息）。无论是在开展代码审查、重构、测试生成、修复 Bug、编写文档或接手新项目等任务之初，还是在需要通过 `ls`、`find` 或 `grep` 等命令来探查代码库（例如了解技术栈、定位配置文件，或确定某项变更涉及哪些模块）时，都可以使用该工具。建议优先使用此工具，而非手动进行探查。",
+      "author": {
+        "name": "coohu"
+      },
+      "repo": "https://github.com/shengsuan/project-inspector",
+      "tags": [
+        "software",
+        "research"
+      ],
+      "license": "Apache-2.0",
+      "verified": true,
+      "featured": false,
+      "install": {
+        "args": [
+          "shengsuan/project-inspector"
+        ],
+        "command": "cline skill install shengsuan/project-inspector"
       }
     }
   ]
