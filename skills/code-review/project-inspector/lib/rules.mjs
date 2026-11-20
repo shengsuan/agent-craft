@@ -1,0 +1,170 @@
+export const norm = s => s.toLowerCase().replace(/_/g, "-");
+
+export const LANGS = {
+  ts: "TypeScript", tsx: "TypeScript", mts: "TypeScript", cts: "TypeScript",
+  js: "JavaScript", jsx: "JavaScript", mjs: "JavaScript", cjs: "JavaScript",
+  py: "Python", go: "Go", rs: "Rust", java: "Java", kt: "Kotlin", kts: "Kotlin",
+  cs: "C#", rb: "Ruby", php: "PHP", swift: "Swift", dart: "Dart", scala: "Scala",
+  c: "C", h: "C", cc: "C++", cpp: "C++", cxx: "C++", hpp: "C++",
+  sh: "Shell", ex: "Elixir", exs: "Elixir", lua: "Lua", sql: "SQL",
+  vue: "Vue SFC", svelte: "Svelte SFC",
+};
+
+export const ext = f => {
+  const i = f.lastIndexOf(".");
+  return i > f.lastIndexOf("/") ? f.slice(i + 1).toLowerCase() : "";
+};
+
+export const langOf = f => LANGS[ext(f)];
+
+export const LANG_MARKERS = {
+  TypeScript: { files: /(^|\/)tsconfig(\.[\w-]+)?\.json$/, deps: ["typescript"] },
+  JavaScript: { files: /(^|\/)package\.json$/ },
+  Python: { files: /(^|\/)(pyproject\.toml|setup\.py|Pipfile|requirements[\w.-]*\.txt)$/ },
+  Go: { files: /(^|\/)go\.mod$/ },
+  Rust: { files: /(^|\/)Cargo\.toml$/ },
+  Java: { files: /(^|\/)(pom\.xml|build\.gradle)$/ },
+  Kotlin: { files: /(^|\/)build\.gradle\.kts$/ },
+  "C#": { files: /\.(csproj|sln)$/ },
+  Ruby: { files: /(^|\/)Gemfile$/ },
+  PHP: { files: /(^|\/)composer\.json$/ },
+  "C++": { files: /(^|\/)CMakeLists\.txt$/ },
+};
+
+export const DEP_RULES = [
+  ["framework", "React", ["react"]],
+  ["framework", "Next.js", ["next"]],
+  ["framework", "Vue", ["vue"]],
+  ["framework", "Nuxt", ["nuxt"]],
+  ["framework", "Angular", ["@angular/core"]],
+  ["framework", "Svelte", ["svelte"]],
+  ["framework", "SvelteKit", ["@sveltejs/kit"]],
+  ["framework", "Remix", ["@remix-run/react", "@remix-run/node"]],
+  ["framework", "Astro", ["astro"]],
+  ["framework", "React Native", ["react-native"]],
+  ["framework", "Electron", ["electron"]],
+  ["framework", "NestJS", ["@nestjs/core"]],
+  ["framework", "Express", ["express"]],
+  ["framework", "Fastify", ["fastify"]],
+  ["framework", "Koa", ["koa"]],
+  ["framework", "Hono", ["hono"]],
+  ["framework", "FastAPI", ["fastapi"]],
+  ["framework", "Django", ["django"]],
+  ["framework", "Flask", ["flask"]],
+  ["framework", "Pydantic", ["pydantic"]],
+  ["framework", "SQLAlchemy", ["sqlalchemy"]],
+  ["framework", "Gin", ["github.com/gin-gonic/gin"]],
+  ["framework", "Fiber", ["github.com/gofiber/fiber*"]],
+  ["framework", "Echo", ["github.com/labstack/echo*"]],
+  ["framework", "Axum", ["axum"]],
+  ["framework", "Actix Web", ["actix-web"]],
+  ["framework", "Rocket", ["rocket"]],
+  ["framework", "Tokio", ["tokio"]],
+  ["framework", "Spring Boot", ["org.springframework.boot*", "plugin:org.springframework.boot"]],
+  ["framework", "ASP.NET Core", ["sdk:Microsoft.NET.Sdk.Web", "Microsoft.AspNetCore*"]],
+  ["framework", "Rails", ["rails"]],
+  ["framework", "Laravel", ["laravel/framework"]],
+  ["framework", "Prisma", ["prisma", "@prisma/client"]],
+  ["framework", "TypeORM", ["typeorm"]],
+  ["framework", "Drizzle", ["drizzle-orm"]],
+  ["framework", "GORM", ["gorm.io/gorm"]],
+  ["build", "Vite", ["vite"]],
+  ["build", "Webpack", ["webpack"]],
+  ["build", "Rollup", ["rollup"]],
+  ["build", "esbuild", ["esbuild"]],
+  ["build", "tsup", ["tsup"]],
+  ["build", "Turborepo", ["turbo"]],
+  ["build", "Nx", ["nx"]],
+  ["build", "Parcel", ["parcel"]],
+  ["test", "Vitest", ["vitest"]],
+  ["test", "Jest", ["jest"]],
+  ["test", "Mocha", ["mocha"]],
+  ["test", "Playwright", ["@playwright/test", "playwright"]],
+  ["test", "Cypress", ["cypress"]],
+  ["test", "pytest", ["pytest"]],
+  ["test", "JUnit", ["org.junit*", "junit:junit"]],
+  ["test", "xUnit", ["xunit"]],
+  ["test", "testify", ["github.com/stretchr/testify"]],
+  ["lint", "ESLint", ["eslint"]],
+  ["lint", "Prettier", ["prettier"]],
+  ["lint", "Biome", ["@biomejs/biome"]],
+  ["lint", "Ruff", ["ruff"]],
+  ["lint", "Black", ["black"]],
+  ["lint", "mypy", ["mypy"]],
+  ["lint", "Pylint", ["pylint"]],
+  ["lint", "Flake8", ["flake8"]],
+  ["db", "PostgreSQL", ["pg", "psycopg", "psycopg2", "psycopg2-binary", "asyncpg", "tokio-postgres", "github.com/lib/pq", "github.com/jackc/pgx*", "org.postgresql:postgresql", "Npgsql*"]],
+  ["db", "MySQL", ["mysql", "mysql2", "pymysql", "mysqlclient", "github.com/go-sql-driver/mysql", "mysql:mysql-connector-java", "com.mysql:mysql-connector-j"]],
+  ["db", "MongoDB", ["mongodb", "mongoose", "pymongo", "motor", "go.mongodb.org/mongo-driver*"]],
+  ["db", "Redis", ["redis", "ioredis", "github.com/redis/go-redis*", "github.com/go-redis/redis*"]],
+  ["db", "SQLite", ["better-sqlite3", "sqlite3", "aiosqlite", "rusqlite", "org.xerial:sqlite-jdbc"]],
+];
+
+const EXACT = new Map();
+const PREFIX = [];
+for (const [kind, name, pats] of DEP_RULES) {
+  for (const p of pats) {
+    const n = norm(p);
+    if (n.endsWith("*")) PREFIX.push([n.slice(0, -1), kind, name]);
+    else EXACT.set(n, [...(EXACT.get(n) ?? []), [kind, name]]);
+  }
+}
+
+export const matchDep = n => [
+  ...(EXACT.get(n) ?? []),
+  ...PREFIX.filter(([pre]) => n.startsWith(pre)).map(([, kind, name]) => [kind, name]),
+];
+
+export const FILE_RULES = [
+  ["build", "Vite", /(^|\/)vite\.config\.[cm]?[jt]s$/],
+  ["build", "Webpack", /(^|\/)webpack\.config\.[cm]?[jt]s$/],
+  ["build", "Turborepo", /(^|\/)turbo\.json$/],
+  ["build", "Nx", /(^|\/)nx\.json$/],
+  ["build", "Make", /(^|\/)Makefile$/],
+  ["build", "CMake", /(^|\/)CMakeLists\.txt$/],
+  ["build", "Maven", /(^|\/)pom\.xml$/],
+  ["build", "Gradle", /(^|\/)build\.gradle(\.kts)?$/],
+  ["build", "Cargo", /(^|\/)Cargo\.toml$/],
+  ["build", "dotnet", /\.(csproj|sln)$/],
+  ["test", "Vitest", /(^|\/)vitest\.(config|workspace)\.[cm]?[jt]s$/],
+  ["test", "Jest", /(^|\/)jest\.config\.[cm]?[jt]s$/],
+  ["test", "Playwright", /(^|\/)playwright\.config\.[cm]?[jt]s$/],
+  ["test", "Cypress", /(^|\/)cypress\.config\.[cm]?[jt]s$/],
+  ["test", "pytest", /(^|\/)(pytest\.ini|conftest\.py)$/],
+  ["lint", "ESLint", /(^|\/)(eslint\.config\.[cm]?[jt]s|\.eslintrc(\.[a-z]+)?)$/],
+  ["lint", "Prettier", /(^|\/)(\.prettierrc(\.[a-z]+)?|prettier\.config\.[cm]?[jt]s)$/],
+  ["lint", "Biome", /(^|\/)biome\.jsonc?$/],
+  ["lint", "Ruff", /(^|\/)\.?ruff\.toml$/],
+  ["lint", "golangci-lint", /(^|\/)\.golangci\.ya?ml$/],
+  ["lint", "rustfmt", /(^|\/)\.?rustfmt\.toml$/],
+  ["pm", "pnpm", /(^|\/)pnpm-lock\.yaml$/],
+  ["pm", "npm", /(^|\/)package-lock\.json$/],
+  ["pm", "Yarn", /(^|\/)yarn\.lock$/],
+  ["pm", "Bun", /(^|\/)bun\.lockb?$/],
+  ["pm", "uv", /(^|\/)uv\.lock$/],
+  ["pm", "Poetry", /(^|\/)poetry\.lock$/],
+  ["pm", "Pipenv", /(^|\/)Pipfile(\.lock)?$/],
+  ["pm", "pip", /(^|\/)requirements[\w.-]*\.txt$/],
+  ["pm", "Go modules", /(^|\/)go\.mod$/],
+  ["pm", "Cargo", /(^|\/)Cargo\.lock$/],
+  ["pm", "Bundler", /(^|\/)Gemfile(\.lock)?$/],
+  ["pm", "Composer", /(^|\/)composer\.lock$/],
+  ["pm", "Maven", /(^|\/)pom\.xml$/],
+  ["pm", "Gradle", /(^|\/)build\.gradle(\.kts)?$/],
+  ["pm", "NuGet", /\.csproj$/],
+  ["ci", "GitHub Actions", /^\.github\/workflows\/[^/]+\.ya?ml$/],
+  ["ci", "GitLab CI", /(^|\/)\.gitlab-ci\.ya?ml$/],
+  ["ci", "Jenkins", /(^|\/)Jenkinsfile$/],
+  ["ci", "CircleCI", /^\.circleci\/config\.ya?ml$/],
+  ["ci", "Azure Pipelines", /(^|\/)azure-pipelines\.ya?ml$/],
+  ["container", "Dockerfile", /(^|\/)(Dockerfile(\..+)?|[^/]+\.Dockerfile)$/],
+  ["container", "Docker Compose", /(^|\/)(docker-)?compose(\.[\w-]+)?\.ya?ml$/],
+  ["container", "Helm", /(^|\/)Chart\.yaml$/],
+  ["container", "Kustomize", /(^|\/)kustomization\.ya?ml$/],
+  ["deploy", "Terraform", /\.tf$/],
+  ["deploy", "Vercel", /(^|\/)vercel\.json$/],
+  ["deploy", "Netlify", /(^|\/)netlify\.toml$/],
+  ["deploy", "Fly.io", /(^|\/)fly\.toml$/],
+  ["deploy", "Serverless", /(^|\/)serverless\.ya?ml$/],
+  ["deploy", "Pulumi", /(^|\/)Pulumi\.ya?ml$/],
+];

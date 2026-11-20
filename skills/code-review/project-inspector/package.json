@@ -1,0 +1,15 @@
+{
+  "name": "project-inspector",
+  "version": "1.0.0",
+  "description": "Deterministic, zero-dependency project analyzer that produces a structured project profile for AI agents and skills",
+  "type": "module",
+  "main": "index.mjs",
+  "types": "index.d.ts",
+  "bin": { "project-inspector": "cli.mjs" },
+  "exports": { ".": { "types": "./index.d.ts", "default": "./index.mjs" } },
+  "private": true,
+  "files": ["index.mjs", "index.d.ts", "cli.mjs", "mcp.mjs", "lib", "GUIDE.md", "README.md"],
+  "scripts": { "test": "node --test" },
+  "engines": { "node": ">=18.3" },
+  "license": "MIT"
+}

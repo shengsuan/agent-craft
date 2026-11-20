@@ -39,6 +39,22 @@ description: 自动审查 Git 代码变更。智能识别审查范围、语言�
 
 开始时最多用一句话告知自动判定的范围。只有缺少必要信息、范围存在实质歧义、可能执行有破坏性的操作或需要授权时才提问；一次只问一个阻塞性问题。其他未知项记录为假设或限制，不中断流程。
 
+## 项目信息工具
+
+本 Skill 内置 `project-inspector`（位于 `<skill-dir>/project-inspector/`，零依赖，仅需 Node.js >= 18.3）。它用确定性代码收集项目事实，由审查者负责推理和判断。调用方式：
+
+```
+node <skill-dir>/project-inspector/cli.mjs scan -p code-review -f md
+node <skill-dir>/project-inspector/cli.mjs inspect <paths...> -f md
+```
+
+- 工具不执行项目代码、脚本或包管理器，不读取 `.env`、密钥和证书；脚本文本已做凭据脱敏。
+- 加 `-r <dir>` 指定其他仓库根目录。完整用法、输出字段的置信度含义和 MCP 用法见 `project-inspector/GUIDE.md`。
+- 工具的默认基准依次为 `origin/HEAD`、`origin/main`、`origin/master`、`main`、`master`，不识别 upstream 和 `develop`。若 Phase 1 规则需要其他基准，加 `-b <ref>`。
+- 工具的 git 段是当前分支相对 merge-base 的全部变更加 untracked 文件，与 Phase 1 的范围规则并不完全一致。**审查范围以 Phase 1 的 git 命令为准**，工具的 git 段只用于画像和定位受影响子包。
+- `-f md` 只显示前 40 个变更文件和前 40 个子包，超出部分会标注 `… N more`。需要完整清单时使用 Phase 1 的 git 命令。
+- 若运行环境没有 Node.js，退回人工读取 manifest 与配置文件，并在报告的覆盖情况中说明。
+
 ## 标准工作流
 
 ### Phase 1 — 变更边界
@@ -52,16 +68,21 @@ description: 自动审查 Git 代码变更。智能识别审查范围、语言�
 
 ### Phase 2 — 项目画像
 
-读取仓库说明和项目约定（例如 `AGENTS.md`、`CLAUDE.md`、README、CONTRIBUTING），再检查 manifests、lockfiles、构建/测试配置、CI、容器和部署文件。识别：
+先运行一次 `scan -p code-review -f md`，由工具一次性给出：
 
-- 语言及版本、混合语言子项目、运行时/编译器。
-- 框架、核心依赖、数据库、ORM、消息队列及外部 SDK。
-- 项目类型：前端、后端、全栈、移动端、桌面端、CLI、库/SDK、数据/ML、基础设施等。
-- 架构：单体、模块化单体、微服务、事件驱动、分层/六边形、插件式、Serverless 等。
-- 环境：OS、容器、Kubernetes、云服务、CI/CD，以及开发/测试/生产配置方式。
-- 工程约束：lint、typecheck、test、build 命令、兼容性目标和项目规范。
+- 语言及文件数、混合语言子项目、运行时版本（如 `runtimes`）。
+- 框架、核心依赖、包管理器、构建/测试/lint 工具，以及各子包的依赖名和 `scripts`。
+- 架构模式（`patterns`）、模块目录、入口文件；数据库、容器、CI 和部署线索。
+- 测试目录与数量、路由文件、环境变量名、项目文档路径、TypeScript 路径别名。
+- 变更文件所属的受影响子包（`affected packages`），以及深度扫描的范围。
 
-以配置和代码证据为准，不根据目录名称或单个依赖臆测架构。多语言仓库按子项目分别识别。
+工具输出是画像的起点，不替代判断：
+
+- 检测项的 `confidence` 为 0.9 以上时依赖证据可靠；0.7 只说明配置文件存在，需要确认技术确实在用。
+- `architecture.patterns` 中 confidence 为 0.5 的只是命名线索，不得直接断言为架构事实。
+- 路由文件和入口是基于约定的候选，需结合代码确认。
+
+工具不覆盖的内容仍需人工补充：读取 `docs` 中列出的项目约定（如 `AGENTS.md`、`CLAUDE.md`、CONTRIBUTING），以及判断业务语义、兼容性目标和部署流程。多语言仓库按子项目分别识别。
 
 ### Phase 3 — 影响分析
 
@@ -75,13 +96,21 @@ description: 自动审查 Git 代码变更。智能识别审查范围、语言�
 
 先读 diff 周边，再沿调用链、数据流和依赖关系按风险扩展。只扩展到足以验证影响的范围，不无目的扫描全仓库。
 
+优先用工具查询引用关系，而非 grep：
+
+```
+node <skill-dir>/project-inspector/cli.mjs inspect <变更的源文件...> -f md
+```
+
+输出包括每个文件的导出符号、本地和外部导入，以及 `imported by`（反向引用及数量）。`imported by` 列表不做截断，被大量引用的公共模块可能有上百个文件：先看数量判断影响面，再只读取与变更符号直接相关的调用方。变更文件较多时，优先选择导出了符号的非测试源文件，分批查询，不对全部变更文件做无目的的全量扫描。
+
 ### Phase 4 — 生成审查计划
 
 每次执行通用基线检查，并按项目画像加载专项规则：
 
 - 必须读取 `references/review-checklist.md`。
 - 必须读取 `references/report-template.md`。
-- 按检测结果读取 `references/technology-matrix.md` 中相关语言、框架、架构和环境章节；多语言项目分别加载。
+- 依据 Phase 2 画像中的 `languages`、`frameworks`、`architecture.patterns` 和 `infrastructure`，只读取 `references/technology-matrix.md` 中适用的语言、框架、架构和环境章节；多语言项目分别加载。
 
 建立覆盖清单。适用项逐一执行；不适用项标记 N/A。不得机械套用所有技术栈清单，也不得因未列出的语言/框架而跳过检查。
 
@@ -91,7 +120,7 @@ description: 自动审查 Git 代码变更。智能识别审查范围、语言�
 
 ### Phase 6 — 工具验证
 
-1. 先检查项目声明的工具版本和脚本，再决定运行哪些 lint、typecheck、test、静态分析或 build 命令。
+1. 以画像中各子包的 `scripts` 和 `toolchain` 为准，决定运行哪些 lint、typecheck、test、静态分析或 build 命令。
 2. 优先使用仓库已有工具；不擅自安装依赖、升级工具或修改配置。
 3. 执行前判断命令是否会删除/改写文件、修改数据库、访问网络/生产环境、改变 Git 状态或运行不可信脚本。存在风险时不执行，除非用户授权。
 4. 记录命令、结果和未执行原因；区分环境失败、既有失败和本次变更引起的失败。
@@ -121,6 +150,7 @@ description: 自动审查 Git 代码变更。智能识别审查范围、语言�
 - 读取 `.env`、密钥、证书和凭据遵循最小必要原则；报告指出位置和类型，不复制真实密钥值。
 - 默认不运行安装、发布、部署、数据库迁移、清库、删除、全仓格式化或修改 Git 历史的命令。
 - 不访问生产服务，不向未获授权的外部服务上传私有代码。
+- 内置工具只读：只执行只读的 git 命令（已禁用 fsmonitor），不修改仓库。
 - 不修改用户文件。用户明确要求修复时，将修复作为独立任务，并在修改后重新审查。
 - 临时文件放在安全位置；结束时仅清理本次创建的临时文件。
 
