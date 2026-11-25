@@ -171,6 +171,32 @@
         ],
         "command": "cline skill install shengsuan/project-inspector"
       }
+    },
+    {
+      "id": "fast-jev-compaction",
+      "type": "plugin",
+      "name": "决策模型精简项目",
+      "tagline": "使用决策模型压缩上下文、裁剪单元测试、精简代码注释。",
+      "description": "这是一个 Claude Code 插件，它用“Jev 决策”（Jev decisions）取代了原有的压缩摘要（compaction summary）：通过一次快速请求，对每一次工具调用及其结果进行评分；过时的内容会被剔除或截断，而保留下来的内容则保持原样。该插件也可作为 npm 库使用。",
+      "author": {
+        "name": "shengsuanyun",
+        "url": "https://www.shengsuanyun.com/"
+      },
+      "homepage": "https://www.shengsuanyun.com/",
+      "repo": "https://github.com/shengsuan/fast-jev-compaction",
+      "icon": "https://raw.githubusercontent.com/shengsuan/agent-craft/main/assets/shengsuanyun.svg",
+      "tags": [
+        "software"
+      ],
+      "license": "MIT",
+      "verified": true,
+      "featured": true,
+      "install": {
+        "args": [
+          "fast-jev-compaction"
+        ],
+        "command": "cline plugin install shengsuan/fast-jev-compaction"
+      }
     }
   ]
 }
