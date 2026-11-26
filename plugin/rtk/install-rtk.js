@@ -6,6 +6,7 @@ import { delimiter, join, resolve } from "node:path";
 
 const REPO = "shengsuan/rtk";
 const FETCH_TIMEOUT_MS = 120_000;
+const PROBE_TIMEOUT_MS = 5_000;
 
 function resolveTarget(platform, arch) {
 	if (platform === "darwin" && arch === "arm64") return "aarch64-apple-darwin";
@@ -14,6 +15,14 @@ function resolveTarget(platform, arch) {
 	if (platform === "linux" && arch === "arm64") return "aarch64-unknown-linux-musl";
 	if (platform === "win32" && arch === "x64") return "x86_64-pc-windows-msvc";
 	throw new Error(`Unsupported platform: ${platform}/${arch}`);
+}
+
+function findRtkOnPath() {
+	const result = spawnSync("rtk", ["--version"], {
+		encoding: "utf8",
+		timeout: PROBE_TIMEOUT_MS,
+	});
+	return result.status === 0 ? result.stdout.trim() : undefined;
 }
 
 async function fetchBuffer(url) {
@@ -74,13 +83,11 @@ function isOnPath(directory) {
 		.some((entry) => entry && resolve(entry) === target);
 }
 
-async function main() {
+async function downloadRtk(installDir) {
 	const target = resolveTarget(process.platform, process.arch);
 	const isWindows = process.platform === "win32";
 	const assetName = `rtk-${target}${isWindows ? ".exe" : ""}`;
 	const binaryName = isWindows ? "rtk.exe" : "rtk";
-	const installDir =
-		process.env.RTK_INSTALL_DIR?.trim() || join(homedir(), ".local", "bin");
 
 	const version = await resolveVersion();
 	const releaseBase = `https://github.com/${REPO}/releases/download/${version}`;
@@ -113,7 +120,22 @@ async function main() {
 	}
 }
 
-main().catch((error) => {
-	console.error(`rtk install failed: ${error.message}`);
-	process.exitCode = 1;
-});
+async function main() {
+	const existing = findRtkOnPath();
+	if (existing !== undefined) {
+		console.log(`rtk already on PATH (${existing}); skipping download.`);
+		return;
+	}
+
+	const installDir =
+		process.env.RTK_INSTALL_DIR?.trim() || join(homedir(), ".local", "bin");
+	try {
+		await downloadRtk(installDir);
+	} catch (error) {
+		console.warn(
+			`rtk was not installed: ${error.message}. The plugin still loads; commands run unrewritten until rtk is on PATH.`,
+		);
+	}
+}
+
+main();
