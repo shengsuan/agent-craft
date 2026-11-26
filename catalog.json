@@ -193,9 +193,9 @@
       "featured": true,
       "install": {
         "args": [
-          "rtk"
+          "shengsuan/agent-craft"
         ],
-        "command": "cline plugin install shengsuan/rtk/tree/develop/cline-plugin"
+        "command": "cline plugin install shengsuan/agent-craft"
       }
     }
   ]
