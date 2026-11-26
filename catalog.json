@@ -3,9 +3,9 @@
   "generatedAt": "2026-11-17T11:18:28.359Z",
   "baseUrl": "https://github.com/shengsuan/agent-craft",
   "counts": {
-    "total": 2,
+    "total": 5,
     "mcps": 1,
-    "plugins": 0,
+    "plugins": 3,
     "skills": 1
   },
   "tags": [
@@ -173,17 +173,17 @@
       }
     },
     {
-      "id": "fast-jev-compaction",
+      "id": "rtk",
       "type": "plugin",
-      "name": "决策模型精简项目",
-      "tagline": "使用决策模型压缩上下文、裁剪单元测试、精简代码注释。",
-      "description": "这是一个 Claude Code 插件，它用“Jev 决策”（Jev decisions）取代了原有的压缩摘要（compaction summary）：通过一次快速请求，对每一次工具调用及其结果进行评分；过时的内容会被剔除或截断，而保留下来的内容则保持原样。该插件也可作为 npm 库使用。",
+      "name": "命令行输出压缩",
+      "tagline": "rtk 在命令输出到达 LLM 上下文之前进行过滤和压缩。单一 Rust 二进制文件，零依赖，<10ms 开销。",
+      "description": "bash 输出只是输入 token 的来源之一，此外还有你的提示词、系统提示词和对话历史。而输入 token 本身也只是账单的一部分，账单还包含输出 token。削减效果在每一步都会被稀释。",
       "author": {
         "name": "shengsuanyun",
         "url": "https://www.shengsuanyun.com/"
       },
       "homepage": "https://www.shengsuanyun.com/",
-      "repo": "https://github.com/shengsuan/fast-jev-compaction",
+      "repo": "https://github.com/shengsuan/rtk",
       "icon": "https://raw.githubusercontent.com/shengsuan/agent-craft/main/assets/shengsuanyun.svg",
       "tags": [
         "software"
@@ -193,9 +193,9 @@
       "featured": true,
       "install": {
         "args": [
-          "fast-jev-compaction"
+          "rtk"
         ],
-        "command": "cline plugin install shengsuan/fast-jev-compaction"
+        "command": "cline plugin install shengsuan/rtk/tree/develop/cline-plugin"
       }
     }
   ]
