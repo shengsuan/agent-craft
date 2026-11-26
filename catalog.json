@@ -199,6 +199,38 @@
           "plugin/rtk"
         ],
         "command": "cline plugin install https://github.com/shengsuan/agent-craft --git --subdir plugin/rtk"
+      },
+      "agents": [
+        "cline",
+        "codex"
+      ],
+      "codex": {
+        "type": "hook",
+        "platforms": {
+          "macos": {
+            "setup": [
+              "node plugin/rtk/install-rtk.js",
+              "rtk init -g --codex"
+            ],
+            "binaryPath": "~/.local/bin/rtk"
+          },
+          "linux": {
+            "setup": [
+              "node plugin/rtk/install-rtk.js",
+              "rtk init -g --codex"
+            ],
+            "binaryPath": "~/.local/bin/rtk"
+          },
+          "windows": {
+            "setup": [
+              "node plugin/rtk/install-rtk.js",
+              "rtk init -g --codex"
+            ],
+            "binaryPath": "%USERPROFILE%\\.local\\bin\\rtk.exe"
+          }
+        },
+        "verify": "rtk gain",
+        "note": "install-rtk.js downloads shengsuan/rtk (checksum-verified) to ~/.local/bin, or to RTK_INSTALL_DIR if set. Add that directory to PATH if the script reports it is missing. If PATH already holds a different rtk (e.g. the crates.io project), the script skips the download, so remove or rename it first."
       }
     }
   ]
