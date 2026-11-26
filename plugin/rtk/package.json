@@ -1,11 +1,15 @@
 {
-  "name": "rtk-cline-plugin",
+  "name": "agent-craft",
   "version": "1.0.0",
   "private": true,
-  "description": "Installs the rtk binary matching the current platform through cline plugin install",
+  "description": "Cline plugin and skill catalog. Plugins are listed explicitly so installs never scan the whole repository.",
   "type": "module",
   "cline": {
-    "plugins": ["./index.js"]
+    "plugins": [
+      {
+        "paths": ["./index.js"]
+      }
+    ]
   },
   "scripts": {
     "postinstall": "node ./install-rtk.js"

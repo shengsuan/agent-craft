@@ -193,9 +193,12 @@
       "featured": true,
       "install": {
         "args": [
-          "shengsuan/agent-craft"
+          "https://github.com/shengsuan/agent-craft",
+          "--git",
+          "--subdir",
+          "plugin/rtk"
         ],
-        "command": "cline plugin install shengsuan/agent-craft"
+        "command": "cline plugin install https://github.com/shengsuan/agent-craft --git --subdir plugin/rtk"
       }
     }
   ]
